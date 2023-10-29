@@ -1,23 +1,23 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsRegressor
+from scipy.fft import fft
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV
 import psycopg2
-import schedule
-import time
-import os
-def check_for_changes():
-    # Connect to the database and query for changes
-    conn = psycopg2.connect(os.environ['DATABASE_URL'])
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM your_table WHERE modified_at > %s", (last_check_time,))
-    changes = cur.fetchall()
-    cur.close()
-    conn.close()
+import pickle
+from sklearn.metrics import mean_squared_error
+import json
+import re
 
-    # Process the changes
-    for change in changes:
-        print(change)
+conn = psycopg2.connect('postgresql://mindsdb:k7zLDNTQDme3wI6KpquUTQ@good-stag-12544.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full')
+with conn.cursor() as cur:
+    print(cur.execute("USE defaultdb"))
+    print(cur.execute("SELECT * FROM eeg_data"))
+    rows = cur.fetchall()
+    for row in rows:
+        json_data = row[1]
+        numbers = [float(num) for num in re.findall(r'\d+.\d+|\d+', json_data)]
 
-# Schedule the check_for_changes function to run every minute
-schedule.every(1).minutes.do(check_for_changes)
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+        print(numbers)
