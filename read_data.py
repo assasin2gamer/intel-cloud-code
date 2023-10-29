@@ -12,12 +12,3 @@ import json
 import re
 
 conn = psycopg2.connect('postgresql://mindsdb:k7zLDNTQDme3wI6KpquUTQ@good-stag-12544.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full')
-with conn.cursor() as cur:
-    print(cur.execute("USE defaultdb"))
-    print(cur.execute("SELECT * FROM eeg_data"))
-    rows = cur.fetchall()
-    for row in rows:
-        json_data = row[1]
-        numbers = [float(num) for num in re.findall(r'\d+.\d+|\d+', json_data)]
-
-        print(numbers)
